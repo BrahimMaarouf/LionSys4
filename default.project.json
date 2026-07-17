@@ -1,0 +1,16 @@
+{
+  "name": "WorldEngine",
+  "tree": {
+    "$className": "DataModel",
+    "ServerStorage": {
+      "WorldEngine": {
+        "$path": "src/ServerStorage/WorldEngine"
+      }
+    },
+    "ServerScriptService": {
+      "WorldEngineRunners": {
+        "$path": "src/ServerScriptService/WorldEngineRunners"
+      }
+    }
+  }
+}
