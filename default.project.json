@@ -2,14 +2,35 @@
   "name": "WorldEngine",
   "tree": {
     "$className": "DataModel",
+    "Workspace": {
+      "WorldRoot": {
+        "$className": "Folder",
+        "$ignoreUnknownInstances": true,
+        "Generated": {
+          "$className": "Folder",
+          "TerrainDetails": { "$className": "Folder" },
+          "Paths": { "$className": "Folder" },
+          "Landmarks": { "$className": "Folder" },
+          "Props": { "$className": "Folder" }
+        },
+        "Preview": { "$className": "Folder" },
+        "Diagnostics": { "$className": "Folder" }
+      }
+    },
     "ServerStorage": {
       "WorldEngine": {
-        "$path": "src/ServerStorage/WorldEngine"
+        "$path": "src/ServerStorage/WorldEngine",
+        "$ignoreUnknownInstances": true
       }
     },
     "ServerScriptService": {
       "WorldEngineRunners": {
         "$path": "src/ServerScriptService/WorldEngineRunners"
+      }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "$path": "src/StarterPlayer/StarterPlayerScripts"
       }
     }
   }

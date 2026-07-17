@@ -4,7 +4,7 @@ Rojo-compatible source mirror for the procedural world system in the active Robl
 
 ## Current status
 
-Milestone 1 is complete. Its full current-session suite and post-restart golden regression both pass, as recorded in `MILESTONE_1_RECAP.md`.
+Milestones 1 and 2 are complete. The owned Blender-to-Roblox asset slice, deterministic placement, authored runtime LODs, and independent-session cumulative regression all pass. See `MILESTONE_2_RECAP.md`.
 
 ## Layout
 
@@ -14,6 +14,6 @@ Milestone 1 is complete. Its full current-session suite and post-restart golden 
 
 ## Rojo workflow
 
-Rojo is not currently installed on this machine. Once installed, run `rojo serve` from this repository and connect the Rojo Studio plugin. Review the initial diff carefully before syncing because the active place currently contains the authoritative scene folders and diagnostics in addition to these scripts.
+Rojo `7.7.0` is pinned through `rokit.toml`. Run `rojo serve` from this repository and connect the matching Studio plugin. Review the initial diff carefully because the active place also contains Studio-managed mesh templates and diagnostics.
 
-The post-restart golden regression passes. Commit this mirror before beginning Milestone 2.
+Milestone 1 and Milestone 2 cross-session golden regressions pass. Milestone 3 can now build composition and additional desert asset families on this foundation.

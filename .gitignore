@@ -1,0 +1,14 @@
+# Local DCC/tool installations
+tools/
+
+# Local Studio/import diagnostics
+build/
+*.blend1
+
+# Roblox/Rojo generated outputs
+*.rbxl
+*.rbxlx
+*.rbxmx
+*.rbxl.lock
+*.rbxlx.lock
+sourcemap.json

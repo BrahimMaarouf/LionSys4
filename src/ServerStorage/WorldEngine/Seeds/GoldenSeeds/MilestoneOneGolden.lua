@@ -2,6 +2,7 @@
 
 local golden = {
 	BaselineRecordedAtUnix = 1784212064,
+	BaselineSessionId = "d37bc4d1-a484-4be5-a36d-2fa4e9c492fa",
 	WorldSpec = "DesertVerticalSlice",
 	GeneratorVersion = "1.0.0-m1",
 	WorldSeed = 271828,

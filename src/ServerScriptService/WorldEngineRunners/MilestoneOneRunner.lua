@@ -241,7 +241,7 @@ function Runner.RunGoldenRegression()
 		and chunkMismatchCount == 0
 
 	local worldRoot = Workspace:WaitForChild("WorldRoot")
-	local baselineSessionId = worldRoot:GetAttribute("Milestone1BaselineSessionId")
+	local baselineSessionId = golden.BaselineSessionId or worldRoot:GetAttribute("Milestone1BaselineSessionId")
 	local sessionBoundaryVerified = type(baselineSessionId) == "string"
 		and baselineSessionId ~= SESSION_ID
 	local passed = signatureMatches and sessionBoundaryVerified

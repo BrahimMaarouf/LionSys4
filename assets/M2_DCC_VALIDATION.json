@@ -1,0 +1,299 @@
+{
+  "assets": {
+    "DryShrub": {
+      "assertions": {
+        "collision_simpler_than_lod0": true,
+        "exact_object_names": true,
+        "file_exists": true,
+        "ground_contact": true,
+        "identity_rotation": true,
+        "identity_scale": true,
+        "lod_triangles_descend": true,
+        "origins_at_zero": true,
+        "render_mesh_has_material": true,
+        "render_mesh_has_uvs": true
+      },
+      "objects": {
+        "DryShrubBranches_LOD0": {
+          "bounds": {
+            "max": [
+              2.8905,
+              2.4713,
+              6.2
+            ],
+            "min": [
+              -2.5823,
+              -0.5093,
+              0.0
+            ]
+          },
+          "materials": [
+            "M2_DryBranch"
+          ],
+          "triangles": 112,
+          "uv_layers": 1
+        },
+        "DryShrubFoliage_LOD0": {
+          "bounds": {
+            "max": [
+              4.25,
+              4.25,
+              7.0
+            ],
+            "min": [
+              -4.25,
+              -4.25,
+              0.0
+            ]
+          },
+          "materials": [
+            "M2_DryShrub_AlphaPBR"
+          ],
+          "triangles": 12,
+          "uv_layers": 1
+        },
+        "DryShrub_COL": {
+          "bounds": {
+            "max": [
+              1.45,
+              1.45,
+              5.0
+            ],
+            "min": [
+              -1.45,
+              -1.45,
+              0.0
+            ]
+          },
+          "materials": [],
+          "triangles": 28,
+          "uv_layers": 1
+        },
+        "DryShrub_LOD1": {
+          "bounds": {
+            "max": [
+              4.15,
+              3.594,
+              6.8
+            ],
+            "min": [
+              -4.15,
+              -3.594,
+              0.0
+            ]
+          },
+          "materials": [
+            "M2_DryShrub_AlphaPBR"
+          ],
+          "triangles": 6,
+          "uv_layers": 1
+        },
+        "DryShrub_LOD2": {
+          "bounds": {
+            "max": [
+              4.0,
+              4.0,
+              6.5
+            ],
+            "min": [
+              -4.0,
+              -4.0,
+              0.0
+            ]
+          },
+          "materials": [
+            "M2_DryShrub_AlphaPBR"
+          ],
+          "triangles": 4,
+          "uv_layers": 1
+        }
+      },
+      "passed": true
+    },
+    "LayeredMesa": {
+      "assertions": {
+        "collision_simpler_than_lod0": true,
+        "exact_object_names": true,
+        "file_exists": true,
+        "ground_contact": true,
+        "identity_rotation": true,
+        "identity_scale": true,
+        "lod_triangles_descend": true,
+        "origins_at_zero": true,
+        "render_mesh_has_material": true,
+        "render_mesh_has_uvs": true
+      },
+      "objects": {
+        "LayeredMesa_COL": {
+          "bounds": {
+            "max": [
+              9.8675,
+              7.3028,
+              7.274
+            ],
+            "min": [
+              -10.1464,
+              -6.6649,
+              0.0
+            ]
+          },
+          "materials": [],
+          "triangles": 38,
+          "uv_layers": 1
+        },
+        "LayeredMesa_LOD0": {
+          "bounds": {
+            "max": [
+              9.4878,
+              6.9042,
+              7.7033
+            ],
+            "min": [
+              -9.9034,
+              -7.1375,
+              0.0
+            ]
+          },
+          "materials": [
+            "M2_Sandstone_PBR.001"
+          ],
+          "triangles": 960,
+          "uv_layers": 1
+        },
+        "LayeredMesa_LOD1": {
+          "bounds": {
+            "max": [
+              9.4878,
+              6.9042,
+              7.7349
+            ],
+            "min": [
+              -9.9034,
+              -7.0513,
+              0.0
+            ]
+          },
+          "materials": [
+            "M2_Sandstone_PBR.001"
+          ],
+          "triangles": 402,
+          "uv_layers": 1
+        },
+        "LayeredMesa_LOD2": {
+          "bounds": {
+            "max": [
+              9.5042,
+              7.0792,
+              7.7621
+            ],
+            "min": [
+              -9.9265,
+              -7.0513,
+              0.0
+            ]
+          },
+          "materials": [
+            "M2_Sandstone_PBR.001"
+          ],
+          "triangles": 134,
+          "uv_layers": 1
+        }
+      },
+      "passed": true
+    },
+    "WindBoulder": {
+      "assertions": {
+        "collision_simpler_than_lod0": true,
+        "exact_object_names": true,
+        "file_exists": true,
+        "ground_contact": true,
+        "identity_rotation": true,
+        "identity_scale": true,
+        "lod_triangles_descend": true,
+        "origins_at_zero": true,
+        "render_mesh_has_material": true,
+        "render_mesh_has_uvs": true
+      },
+      "objects": {
+        "WindBoulder_COL": {
+          "bounds": {
+            "max": [
+              8.7159,
+              6.8965,
+              11.2583
+            ],
+            "min": [
+              -8.1435,
+              -6.7654,
+              0.0
+            ]
+          },
+          "materials": [],
+          "triangles": 50,
+          "uv_layers": 1
+        },
+        "WindBoulder_LOD0": {
+          "bounds": {
+            "max": [
+              8.6815,
+              7.0052,
+              10.702
+            ],
+            "min": [
+              -8.0773,
+              -6.6748,
+              0.0
+            ]
+          },
+          "materials": [
+            "M2_Sandstone_PBR"
+          ],
+          "triangles": 1280,
+          "uv_layers": 1
+        },
+        "WindBoulder_LOD1": {
+          "bounds": {
+            "max": [
+              8.6618,
+              7.0211,
+              10.6858
+            ],
+            "min": [
+              -8.0414,
+              -6.6498,
+              0.0
+            ]
+          },
+          "materials": [
+            "M2_Sandstone_PBR"
+          ],
+          "triangles": 536,
+          "uv_layers": 1
+        },
+        "WindBoulder_LOD2": {
+          "bounds": {
+            "max": [
+              8.6593,
+              6.9769,
+              10.913
+            ],
+            "min": [
+              -8.1157,
+              -6.728,
+              0.0
+            ]
+          },
+          "materials": [
+            "M2_Sandstone_PBR"
+          ],
+          "triangles": 178,
+          "uv_layers": 1
+        }
+      },
+      "passed": true
+    }
+  },
+  "blender_version": "4.5.0",
+  "passed": true,
+  "unit_convention": "1 Blender unit = 1 Roblox stud"
+}
