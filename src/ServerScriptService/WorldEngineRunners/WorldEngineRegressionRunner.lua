@@ -11,11 +11,25 @@ local MilestoneFour = require(script.Parent.MilestoneFourRunner)
 local MilestoneFive = require(script.Parent.MilestoneFiveRunner)
 local MilestoneSix = require(script.Parent.MilestoneSixRunner)
 local MilestoneEight = require(script.Parent.MilestoneEightRunner)
+local MilestoneNine = require(script.Parent.MilestoneNineRunner)
 
-local RuinMaterializer = require(
-	ServerStorage:WaitForChild("WorldEngine").Materialization.RuinMaterializer)
+local WorldEngine = ServerStorage:WaitForChild("WorldEngine")
+local RuinMaterializer = require(WorldEngine.Materialization.RuinMaterializer)
+local RuinTemplateBuilder = require(WorldEngine.Assets.Ruins.RuinTemplateBuilder)
+local TextureApplier = require(WorldEngine.Assets.Rocks.MilestoneSevenTextureApplier)
 
 local Runner = {}
+
+-- Rojo sync-in removes Studio-owned instances it does not manage (the ruin
+-- template Models and template SurfaceAppearance edits). Both are reproducible
+-- from committed code, so the suite self-heals before validating.
+local function selfHealStudioAssets()
+	local templates = WorldEngine.Assets.Ruins:FindFirstChild("Templates")
+	if not templates or #templates:GetChildren() ~= 8 then
+		RuinTemplateBuilder.Build()
+	end
+	TextureApplier.Apply()
+end
 
 -- Cumulative state machine (explicit, order matters):
 -- 1. Clear the M8 ruins layer. The M1-M6 validators predate ruins and some
@@ -27,6 +41,7 @@ local Runner = {}
 -- 3. Run M8 last; it regenerates the ruins layer over the verified world and
 --    leaves the place in its complete final state.
 function Runner.Run()
+	selfHealStudioAssets()
 	RuinMaterializer.Clear()
 	local milestoneOne = MilestoneOne.RunGoldenRegression()
 	local milestoneTwo = MilestoneTwo.RunGoldenRegression()
@@ -35,10 +50,11 @@ function Runner.Run()
 	local milestoneFive = MilestoneFive.RunGoldenRegression()
 	local milestoneSix = MilestoneSix.RunGoldenRegression()
 	local milestoneEight = MilestoneEight.RunGoldenRegression()
-	local passed = milestoneOne.Passed and milestoneTwo.Passed and milestoneThree.Passed and milestoneFour.Passed and milestoneFive.Passed and milestoneSix.Passed and milestoneEight.Passed
+	local milestoneNine = MilestoneNine.RunGoldenRegression()
+	local passed = milestoneOne.Passed and milestoneTwo.Passed and milestoneThree.Passed and milestoneFour.Passed and milestoneFive.Passed and milestoneSix.Passed and milestoneEight.Passed and milestoneNine.Passed
 	local report = {
 		Passed = passed,
-		Status = if passed then "PASSED_M1_M2_M3_M4_M5_M6_M8_CUMULATIVE" else "FAILED_OR_GATES_OPEN",
+		Status = if passed then "PASSED_M1_M2_M3_M4_M5_M6_M8_M9_CUMULATIVE" else "FAILED_OR_GATES_OPEN",
 		MilestoneOne = milestoneOne,
 		MilestoneTwo = milestoneTwo,
 		MilestoneThree = milestoneThree,
@@ -46,6 +62,7 @@ function Runner.Run()
 		MilestoneFive = milestoneFive,
 		MilestoneSix = milestoneSix,
 		MilestoneEight = milestoneEight,
+		MilestoneNine = milestoneNine,
 	}
 	local root = Workspace:WaitForChild("WorldRoot")
 	root:SetAttribute("CumulativeRegressionPassed", passed)

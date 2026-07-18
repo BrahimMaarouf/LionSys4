@@ -14,8 +14,9 @@ A deterministic, offline-first procedural world engine for Roblox, built as a Ro
 | 6 — Surface & atmosphere | `m6` | Five-material route-aware surfacing, detail grammar (ripples, drifts, wadi cracks), dust systems, restrained post-FX | `MILESTONE_6_RECAP.md` |
 | 7 — Asset quality | `m7` | Math-authored texture pass (strata rock, varied foliage, dedicated bark set), 15-recipe contact-sheet review, signature-safe swap proof | `MILESTONE_7_RECAP.md` |
 | 8 — Modular ruins | `m8` | Math-authored 8-piece ruin kit, socket-grammar sites with seeded degradation and guaranteed doorways, terrain-snapped grounding, code-rebuildable templates | `MILESTONE_8_RECAP.md` |
+| 9 — World hardening | `m9` | Dune-skirt world edge, boundary walls, plan-only seed browser, full-world cross-layer validation, self-healing regression suite | `MILESTONE_9_RECAP.md` |
 
-All milestones pass a cumulative cross-session golden regression (`PASSED_M1_M2_M3_M4_M5_M6_M8_CUMULATIVE`), verified both in the active Studio and in a clean Rojo-built Studio process.
+All milestones pass a cumulative cross-session golden regression (`PASSED_M1_M2_M3_M4_M5_M6_M8_M9_CUMULATIVE`), verified both in the active Studio and in a clean Rojo-built Studio process.
 
 ## Layout
 
@@ -50,6 +51,6 @@ If Rojo syncs sources while Studio is open, previously required ModuleScripts ke
 
 ## Roadmap
 
-- Device performance profile — deferred to M9 by owner decision.
-- M9 — five-landmark scale-up, world-edge presentation, seed browser.
+- Per-milestone settings UI (seed playground) built on the M9 seed browser.
+- Real-device performance profile — release QA (publish + MicroProfiler on a mid-range phone).
 - Later — forest biome, hydrology-driven biome placement, optional runtime per-server generation.

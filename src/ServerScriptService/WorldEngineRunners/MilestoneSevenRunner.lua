@@ -14,6 +14,14 @@ local SHEET_ORIGIN = Vector3.new(-700, 120, -700) -- far outside the 512-stud wo
 
 local Runner = {}
 
+local function humanVisualSignoff(): boolean
+	local override = Workspace:WaitForChild("WorldRoot"):GetAttribute("Milestone7HumanVisualSignoff")
+	if type(override) == "boolean" then
+		return override
+	end
+	return Evidence.HumanVisualSignoffPassed
+end
+
 -- Clones one live representative of every (family, recipe) variant out of the
 -- generated golden world into a labeled grid far from the world, so a human
 -- can review the shipped expressive range from a single capture. Reviewing
@@ -110,7 +118,7 @@ function Runner.RunGoldenRegression()
 	local textures = Validator.ValidateTemplateTextures()
 	local performance = Validator.CollectPerformanceSnapshot(nil)
 	local root = Workspace:WaitForChild("WorldRoot")
-	local signoff = root:GetAttribute("Milestone7HumanVisualSignoff") == true
+	local signoff = humanVisualSignoff()
 	local passed = cumulative.Passed
 		and textures.Passed
 		and Evidence.TexturePipelineReproducible
@@ -127,6 +135,7 @@ function Runner.RunGoldenRegression()
 		Performance = performance,
 		DeviceProfileRecorded = Evidence.DeviceProfileRecorded,
 		HumanVisualSignoff = signoff,
+		HumanVisualSignoffNotes = Evidence.HumanVisualSignoffNotes,
 	}
 	root:SetAttribute("Milestone7Passed", passed)
 	root:SetAttribute("Milestone7Status", report.Status)

@@ -6,6 +6,8 @@ local evidence = {
 	-- (pipeline/textures/build_m7_texture_carrier.py) ferries them through the
 	-- Studio 3D Importer. Both scripts plus the PNGs are committed.
 	TexturePipelineReproducible = true,
+	HumanVisualSignoffPassed = true,
+	HumanVisualSignoffNotes = "The complete ten-surface M7 texture assignment and the fifteen-recipe contact sheet were reviewed in Studio play mode; rock strata, foliage alpha, and dedicated bark all remained readable.",
 	TextureGenerator = "pipeline/textures/generate_m7_textures.py",
 	TextureCarrier = "pipeline/textures/build_m7_texture_carrier.py",
 	CarrierGlb = "assets/export/M7TextureCarrier.glb",

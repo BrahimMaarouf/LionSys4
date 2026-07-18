@@ -9,6 +9,7 @@ local Catalog = require(WorldEngine.Assets.Rocks.RockCatalog)
 local Spec = require(WorldEngine.Config.WorldSpecs.DesertVerticalSlice)
 local Evidence = require(WorldEngine.Config.MilestoneTwoPipelineEvidence)
 local LightingMaterializer = require(WorldEngine.Materialization.DesertLightingMaterializer)
+local TextureApplier = require(WorldEngine.Assets.Rocks.MilestoneSevenTextureApplier)
 local PropMaterializer = require(WorldEngine.Materialization.RockMaterializer)
 local PropPlanner = require(WorldEngine.Planning.RockPlacementPlanner)
 local Validator = require(WorldEngine.Validation.MilestoneTwoValidator)
@@ -69,6 +70,7 @@ local function saveAttributes(report)
 end
 
 function Runner.Generate()
+	TextureApplier.Apply()
 	local plan = PropPlanner.Plan(Spec)
 	PropMaterializer.Materialize(plan)
 	local lighting = LightingMaterializer.Apply()
@@ -76,6 +78,7 @@ function Runner.Generate()
 end
 
 function Runner.RegenerateAndVerify()
+	TextureApplier.Apply()
 	local catalogValidation = Validator.ValidateCatalog()
 	local templateValidation = Validator.ValidateTemplates()
 	local first = Runner.Generate()
@@ -163,6 +166,7 @@ function Runner.RecordVisualSignoff(passed: boolean, notes: string)
 end
 
 function Runner.RunGoldenRegression()
+	TextureApplier.Apply()
 	local goldenModule = WorldEngine.Seeds.GoldenSeeds:FindFirstChild("MilestoneTwoGolden")
 	assert(goldenModule and goldenModule:IsA("ModuleScript"), "MilestoneTwoGolden baseline is missing")
 	local golden = require(goldenModule)
