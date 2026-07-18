@@ -13,8 +13,9 @@ A deterministic, offline-first procedural world engine for Roblox, built as a Ro
 | 5 — World composition | `m5` | Four named regions, four landmarks + routes + vistas, regional grammar, role-aware repair | `MILESTONE_5_RECAP.md` |
 | 6 — Surface & atmosphere | `m6` | Five-material route-aware surfacing, detail grammar (ripples, drifts, wadi cracks), dust systems, restrained post-FX | `MILESTONE_6_RECAP.md` |
 | 7 — Asset quality | `m7` | Math-authored texture pass (strata rock, varied foliage, dedicated bark set), 15-recipe contact-sheet review, signature-safe swap proof | `MILESTONE_7_RECAP.md` |
+| 8 — Modular ruins | `m8` | Math-authored 8-piece ruin kit, socket-grammar sites with seeded degradation and guaranteed doorways, terrain-snapped grounding, code-rebuildable templates | `MILESTONE_8_RECAP.md` |
 
-All seven pass a cumulative cross-session golden regression (`PASSED_M1_M2_M3_M4_M5_M6_CUMULATIVE`), verified both in the active Studio and in a clean Rojo-built Studio process.
+All milestones pass a cumulative cross-session golden regression (`PASSED_M1_M2_M3_M4_M5_M6_M8_CUMULATIVE`), verified both in the active Studio and in a clean Rojo-built Studio process.
 
 ## Layout
 
@@ -49,7 +50,6 @@ If Rojo syncs sources while Studio is open, previously required ModuleScripts ke
 
 ## Roadmap
 
-- M8 — socket-grammar modular ruins.
 - Device performance profile — deferred to M9 by owner decision.
 - M9 — five-landmark scale-up, world-edge presentation, seed browser.
 - Later — forest biome, hydrology-driven biome placement, optional runtime per-server generation.
