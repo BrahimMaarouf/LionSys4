@@ -6,11 +6,27 @@ local Workspace = game:GetService("Workspace")
 
 local WorldEngine = ServerStorage:WaitForChild("WorldEngine")
 local Config = require(WorldEngine.Config.Ruins.DesertRuins)
+local Evidence = require(WorldEngine.Config.MilestoneEightEvidence)
 local RuinMaterializer = require(WorldEngine.Materialization.RuinMaterializer)
 local RuinPlanner = require(WorldEngine.Planning.RuinPlanner)
 local Spec = require(WorldEngine.Config.WorldSpecs.DesertVerticalSlice)
 local Validator = require(WorldEngine.Validation.MilestoneEightValidator)
 
+local function getStudioSessionId(): string
+	local marker = ServerStorage:FindFirstChild("_WorldEngineStudioSession")
+	if not marker then
+		marker = Instance.new("Folder")
+		marker.Name = "_WorldEngineStudioSession"
+		marker.Archivable = false
+		marker:SetAttribute("SessionId", HttpService:GenerateGUID(false))
+		marker.Parent = ServerStorage
+	end
+	local sessionId = marker:GetAttribute("SessionId")
+	assert(type(sessionId) == "string", "Studio session marker has no SessionId")
+	return sessionId
+end
+
+local SESSION_ID = getStudioSessionId()
 local Runner = {}
 
 local function saveJson(name: string, report)
@@ -20,6 +36,14 @@ local function saveJson(name: string, report)
 	value.Parent = diagnostics
 	assert(value:IsA("StringValue"))
 	value.Value = HttpService:JSONEncode(report)
+end
+
+local function humanVisualSignoff(): boolean
+	local override = Workspace:WaitForChild("WorldRoot"):GetAttribute("Milestone8HumanVisualSignoff")
+	if type(override) == "boolean" then
+		return override
+	end
+	return Evidence.HumanVisualSignoffPassed
 end
 
 function Runner.Generate()
@@ -83,30 +107,39 @@ function Runner.RunGoldenRegression()
 	local goldenModule = WorldEngine.Seeds.GoldenSeeds:FindFirstChild("MilestoneEightGolden")
 	assert(goldenModule and goldenModule:IsA("ModuleScript"), "MilestoneEightGolden baseline missing")
 	local golden = require(goldenModule)
+	assert(not golden.Pending, "MilestoneEightGolden is still pending an intentional baseline")
 	local runtime = Runner.RegenerateAndVerify()
 	local signaturesMatch = golden.RuinVersion == Config.Version
 		and golden.WorldSeed == Spec.WorldSeed
 		and golden.PlanSignature == runtime.PlanSignature
 		and golden.MaterializedSignature == runtime.MaterializedSignature
 		and golden.PieceCount == runtime.PlanValidation.PieceCount
+	local sessionBoundaryVerified = type(golden.BaselineSessionId) == "string"
+		and golden.BaselineSessionId ~= ""
+		and golden.BaselineSessionId ~= SESSION_ID
 	local root = Workspace:WaitForChild("WorldRoot")
-	local signoff = root:GetAttribute("Milestone8HumanVisualSignoff") == true
-	local passed = runtime.Passed and signaturesMatch and signoff
+	local signoff = humanVisualSignoff()
+	local passed = runtime.Passed and signaturesMatch and sessionBoundaryVerified and signoff
 	local report = {
 		Milestone = 8,
 		Passed = passed,
 		Status = if passed
-			then "PASSED_GOLDEN_MODULAR_RUINS"
+			then "PASSED_CROSS_SESSION_GOLDEN_MODULAR_RUINS"
+			elseif signaturesMatch and not sessionBoundaryVerified then "MATCHED_BUT_SAME_SESSION"
 			elseif not signoff then "AWAITING_VISUAL_SIGNOFF"
 			elseif not signaturesMatch then "SIGNATURE_MISMATCH"
 			else "FAILED",
 		RuntimeStatus = runtime.Status,
+		SessionId = SESSION_ID,
+		BaselineSessionId = golden.BaselineSessionId,
+		SessionBoundaryVerified = sessionBoundaryVerified,
 		PlanSignature = runtime.PlanSignature,
 		ExpectedPlanSignature = golden.PlanSignature,
 		MaterializedSignature = runtime.MaterializedSignature,
 		ExpectedMaterializedSignature = golden.MaterializedSignature,
 		PieceCount = runtime.PlanValidation.PieceCount,
 		HumanVisualSignoff = signoff,
+		HumanVisualSignoffNotes = Evidence.HumanVisualSignoffNotes,
 	}
 	root:SetAttribute("Milestone8Passed", passed)
 	root:SetAttribute("Milestone8Status", report.Status)
