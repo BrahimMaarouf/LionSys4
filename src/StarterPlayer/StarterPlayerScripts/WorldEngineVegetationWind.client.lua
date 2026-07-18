@@ -16,16 +16,14 @@ type WindEntry = {
 }
 
 local entries: {[Model]: WindEntry} = {}
+local pending: {[Model]: boolean} = {}
 
-local function add(instance: Instance)
-	if not instance:IsA("Model") or entries[instance] then
-		return
-	end
+local function tryAdd(instance: Model): boolean
 	local visuals = {}
 	local baseCFrames = {}
-	for _, name in { "Branches", "Foliage" } do
-		local part = instance:FindFirstChild(name)
-		if part and part:IsA("BasePart") then
+	for _, part in instance:GetDescendants() do
+		if part:IsA("BasePart")
+			and (part:GetAttribute("WorldEngineLODLevel") == 0 or part.Name == "Branches" or part.Name == "Foliage") then
 			table.insert(visuals, part)
 			table.insert(baseCFrames, part.CFrame)
 		end
@@ -38,12 +36,34 @@ local function add(instance: Instance)
 			BaseCFrames = baseCFrames,
 			Phase = (if type(index) == "number" then index else 0) * 1.61803398875,
 		}
+		return true
 	end
+	return false
+end
+
+local function add(instance: Instance)
+	if not instance:IsA("Model") or entries[instance] or pending[instance] then
+		return
+	end
+	if tryAdd(instance) then
+		return
+	end
+	pending[instance] = true
+	task.spawn(function()
+		for _ = 1, 20 do
+			if not instance.Parent or tryAdd(instance) then
+				break
+			end
+			task.wait(0.05)
+		end
+		pending[instance] = nil
+	end)
 end
 
 local function remove(instance: Instance)
 	if instance:IsA("Model") then
 		entries[instance] = nil
+		pending[instance] = nil
 	end
 end
 

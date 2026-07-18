@@ -17,13 +17,20 @@ type Entry = {
 }
 
 local entries: {[Model]: Entry} = {}
+local pending: {[Model]: boolean} = {}
 
-local function parts(model: Model, names: {string}): {BasePart}
+local function parts(model: Model, level: number, names: {string}): {BasePart}
 	local result = {}
+	local nameSet: {[string]: boolean} = {}
 	for _, name in names do
-		local instance = model:FindFirstChild(name)
-		if instance and instance:IsA("BasePart") then
-			table.insert(result, instance)
+		nameSet[name] = true
+	end
+	for _, instance in model:GetDescendants() do
+		if instance:IsA("BasePart") then
+			local authoredLevel = instance:GetAttribute("WorldEngineLODLevel")
+			if authoredLevel == level or (authoredLevel == nil and nameSet[instance.Name]) then
+				table.insert(result, instance)
+			end
 		end
 	end
 	return result
@@ -45,28 +52,47 @@ local function setLevel(entry: Entry, level: number)
 	entry.CurrentLevel = level
 end
 
-local function add(instance: Instance)
-	if not instance:IsA("Model") or entries[instance] then
-		return
-	end
+local function tryAdd(instance: Model): boolean
 	local kind = instance:GetAttribute("AssetKind")
 	local lod0Names = if kind == "Vegetation" then { "Branches", "Foliage" } else { "Render" }
 	local entry: Entry = {
 		Model = instance,
-		LOD0 = parts(instance, lod0Names),
-		LOD1 = parts(instance, { "LOD1" }),
-		LOD2 = parts(instance, { "LOD2" }),
+		LOD0 = parts(instance, 0, lod0Names),
+		LOD1 = parts(instance, 1, { "LOD1" }),
+		LOD2 = parts(instance, 2, { "LOD2" }),
 		CurrentLevel = -1,
 	}
-	if #entry.LOD0 > 0 and #entry.LOD1 == 1 and #entry.LOD2 == 1 then
+	if #entry.LOD0 > 0 and #entry.LOD1 > 0 and #entry.LOD1 == #entry.LOD2 then
 		entries[instance] = entry
 		setLevel(entry, 0)
+		return true
 	end
+	return false
+end
+
+local function add(instance: Instance)
+	if not instance:IsA("Model") or entries[instance] or pending[instance] then
+		return
+	end
+	if tryAdd(instance) then
+		return
+	end
+	pending[instance] = true
+	task.spawn(function()
+		for _ = 1, 20 do
+			if not instance.Parent or tryAdd(instance) then
+				break
+			end
+			task.wait(0.05)
+		end
+		pending[instance] = nil
+	end)
 end
 
 local function remove(instance: Instance)
 	if instance:IsA("Model") then
 		entries[instance] = nil
+		pending[instance] = nil
 	end
 end
 
