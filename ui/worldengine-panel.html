@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WorldEngine Control Panel</title>
+<style>
+  :root{--bg:#141210;--panel:#1e1a16;--edge:#332c24;--sand:#d8b98a;--accent:#e0703a;--green:#7fb069;--text:#e8ded2;--dim:#9a8d7d;--code:#120f0d}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text)}
+  header{padding:28px 32px 18px;border-bottom:1px solid var(--edge)}
+  header h1{margin:0;font-size:22px;letter-spacing:.5px}
+  header h1 span{color:var(--accent)}
+  header p{margin:6px 0 0;color:var(--dim);font-size:13px;max-width:860px}
+  nav{display:flex;flex-wrap:wrap;gap:6px;padding:14px 32px;border-bottom:1px solid var(--edge);position:sticky;top:0;background:var(--bg);z-index:5}
+  nav button{background:var(--panel);border:1px solid var(--edge);color:var(--text);padding:7px 13px;border-radius:6px;cursor:pointer;font-size:12.5px}
+  nav button.active{background:var(--accent);border-color:var(--accent);color:#181004;font-weight:600}
+  main{padding:24px 32px 60px;max-width:1000px}
+  section{display:none}
+  section.active{display:block}
+  h2{font-size:17px;margin:2px 0 4px}
+  .tag{display:inline-block;font-size:10.5px;padding:2px 8px;border-radius:10px;background:var(--edge);color:var(--sand);margin-left:8px;vertical-align:2px}
+  .desc{color:var(--dim);font-size:13px;margin:4px 0 18px;max-width:820px;line-height:1.5}
+  .card{background:var(--panel);border:1px solid var(--edge);border-radius:10px;padding:16px 18px;margin-bottom:14px}
+  .card h3{margin:0 0 4px;font-size:14px}
+  .card p{margin:0 0 12px;font-size:12.5px;color:var(--dim);line-height:1.5}
+  label{font-size:12px;color:var(--sand);display:block;margin:8px 0 4px}
+  input[type=text],input[type=number]{background:var(--code);border:1px solid var(--edge);color:var(--text);border-radius:6px;padding:7px 10px;font-size:13px;width:230px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+  .gen{background:var(--accent);border:none;color:#181004;font-weight:600;padding:9px 16px;border-radius:7px;cursor:pointer;font-size:13px}
+  .gen.alt{background:var(--green)}
+  .gen.ghost{background:transparent;border:1px solid var(--edge);color:var(--text);font-weight:400}
+  pre{background:var(--code);border:1px solid var(--edge);border-radius:8px;padding:12px 14px;font-size:12px;overflow-x:auto;position:relative;white-space:pre-wrap;word-break:break-all;color:#cfe3b8}
+  .copybar{display:flex;justify-content:space-between;align-items:center;margin-top:14px}
+  .copybar span{font-size:11px;color:var(--dim)}
+  .copied{color:var(--green)!important}
+  .note{border-left:3px solid var(--accent);padding:8px 12px;background:var(--panel);font-size:12px;color:var(--dim);border-radius:0 8px 8px 0;margin-bottom:16px}
+  .golden{color:var(--sand)}
+</style>
+</head>
+<body>
+<header>
+  <h1>World<span>Engine</span> Control Panel</h1>
+  <p>Seed playground for the nine-milestone desert engine. Pick a zone, set your seeds and options, press a button — the exact Studio command appears below it. Paste it into the Roblox Studio <b>command bar</b> (View → Output must be open to see results). Golden seed: <b class="golden">271828</b>. After experimenting, restore the verified world from the <b>Golden</b> zone.</p>
+</header>
+<nav id="nav"></nav>
+<main id="main"></main>
+
+<script>
+const CONSOLE_REQUIRE = 'local C = require(game.ServerScriptService.WorldEngineRunners.WorldEngineConsole); ';
+const zones = [
+ {id:'golden', title:'Golden World', tag:'cumulative M1–M9', desc:'The verified baseline. Rebuilds every layer for seed 271828 and runs all golden regressions. Use this to restore the world after any experiment below. Expect PASSED_M1_M2_M3_M4_M5_M6_M8_M9_CUMULATIVE in the Output window.', cards:[
+   {h:'Restore & verify golden world', p:'Full rebuild plus every milestone golden regression. Takes ~30–60 s.', make:()=>`${CONSOLE_REQUIRE}print(game:GetService("HttpService"):JSONEncode(C.RestoreGoldenWorld()))`, btn:'Restore golden world', alt:true},
+   {h:'Engine status', p:'Which seed is materialized, golden seed, last verification time.', make:()=>`${CONSOLE_REQUIRE}print(game:GetService("HttpService"):JSONEncode(C.Status()))`, btn:'Get status', ghost:true},
+ ]},
+ {id:'m1', title:'M1 — Terrain', tag:'heightfield & chunks', desc:'Deterministic seeded heightfield baked into voxel terrain. The M1 golden regression regenerates terrain chunk-by-chunk in forward and reverse order and compares signatures.', cards:[
+   {h:'Run M1 golden regression', p:'Regenerates terrain for the golden seed and verifies signatures cross-session.', make:()=>`print(game:GetService("HttpService"):JSONEncode(require(game.ServerScriptService.WorldEngineRunners.MilestoneOneRunner).RunGoldenRegression()))`, btn:'Verify terrain'},
+   {h:'Build full world for a custom seed', p:'Terrain is regenerated as part of a full-world build. Enter any integer seed.', seed:true, make:s=>`${CONSOLE_REQUIRE}print(game:GetService("HttpService"):JSONEncode(C.BuildWorld(${s})))`, btn:'Build world with seed'},
+ ]},
+ {id:'m2m4', title:'M2–M4 — Assets & Variation', tag:'props, recipes, LODs', desc:'Owned asset kit (2 rocks + 1 shrub), data-only placement, and the 15 art-directed variation recipes. The contact sheet clones one live representative of every recipe into a labeled review grid at the world edge.', cards:[
+   {h:'Build recipe contact sheet', p:'15 recipes in a 5×3 grid, far outside the play area. Fly the camera there to review silhouettes and textures.', make:()=>`${CONSOLE_REQUIRE}print(game:GetService("HttpService"):JSONEncode(C.BuildContactSheet()))`, btn:'Build contact sheet'},
+   {h:'Remove contact sheet', p:'Cleans the review grid up again.', make:()=>`${CONSOLE_REQUIRE}print(C.TeardownContactSheet())`, btn:'Tear down', ghost:true},
+   {h:'Run M2 / M4 golden regressions', p:'Template, texture, placement and identity-audit verification.', make:()=>`local R=game.ServerScriptService.WorldEngineRunners; print(require(R.MilestoneTwoRunner).RunGoldenRegression().Status); print(require(R.MilestoneFourRunner).RunGoldenRegression().Status)`, btn:'Verify assets', ghost:true},
+ ]},
+ {id:'m5m6', title:'M5–M6 — Composition & Surface', tag:'regions, routes, atmosphere', desc:'Four regions, four landmarks, routes, vistas, regional grammar, then the five-material surfacing and atmosphere pass. Preview shows what any seed would generate — without touching the world.', cards:[
+   {h:'Preview seeds (plan-only)', p:'Comma-separated list. Returns landmarks, routes, vistas, placements, ruin sites/pieces and signatures per seed. Creates nothing.', seeds:true, make:s=>`${CONSOLE_REQUIRE}print(game:GetService("HttpService"):JSONEncode(C.Preview({${s}})))`, btn:'Preview seeds'},
+   {h:'Build full world for a seed', p:'Materializes terrain → composition → variation → surfacing → ruins → edge for the seed.', seed:true, make:s=>`${CONSOLE_REQUIRE}print(game:GetService("HttpService"):JSONEncode(C.BuildWorld(${s})))`, btn:'Build world'},
+ ]},
+ {id:'m8', title:'M8 — Ruins', tag:'socket grammar', desc:'Three ruin sites built from the 8-piece kit with seeded degradation: sanctuary at SentinelCrown, wadi garden, route watch post. Regenerating with different seeds changes which walls stand, where rubble falls, and doorway placement — composition stays valid (every ruin keeps an entrance, routes stay clear).', cards:[
+   {h:'Regenerate ruins with a seed', p:'Ruins only — the rest of the world is untouched. Leave empty for the golden seed.', seed:true, optional:true, make:s=>`${CONSOLE_REQUIRE}print(game:GetService("HttpService"):JSONEncode(C.RegenerateRuins(${s||''})))`, btn:'Regenerate ruins'},
+   {h:'Clear ruins', p:'Removes the ruins layer.', make:()=>`${CONSOLE_REQUIRE}print(C.ClearRuins())`, btn:'Clear ruins', ghost:true},
+ ]},
+ {id:'m9', title:'M9 — Edge & Hardening', tag:'skirt, walls, validation', desc:'The dune skirt that carries the horizon past the playable slab, invisible boundary walls, and the full-world cross-layer validation.', cards:[
+   {h:'Regenerate world edge', p:'Rebuilds the 128-stud dune skirt and boundary walls.', make:()=>`${CONSOLE_REQUIRE}print(game:GetService("HttpService"):JSONEncode(C.RegenerateEdge()))`, btn:'Regenerate edge'},
+   {h:'Clear world edge', p:'Removes skirt terrain and walls (playable slab untouched).', make:()=>`${CONSOLE_REQUIRE}print(C.ClearEdge())`, btn:'Clear edge', ghost:true},
+   {h:'Full-world validation', p:'Spawn, grounding, walls, skirt signature, instance/memory census.', make:()=>`print(game:GetService("HttpService"):JSONEncode(require(game.ServerScriptService.WorldEngineRunners.MilestoneNineRunner).ValidateFullWorld()))`, btn:'Validate world', ghost:true},
+ ]},
+];
+
+const nav=document.getElementById('nav'), main=document.getElementById('main');
+zones.forEach((z,i)=>{
+  const b=document.createElement('button'); b.textContent=z.title.split(' — ')[0]+(z.id==='golden'?' ★':'');
+  b.onclick=()=>activate(z.id); b.id='nav-'+z.id; nav.appendChild(b);
+  const s=document.createElement('section'); s.id='zone-'+z.id;
+  s.innerHTML=`<h2>${z.title}<span class="tag">${z.tag}</span></h2><p class="desc">${z.desc}</p>`;
+  z.cards.forEach((c,j)=>{
+    const card=document.createElement('div'); card.className='card';
+    let inputs='';
+    if(c.seed) inputs=`<label>Seed ${c.optional?'(empty = golden 271828)':''}</label><div class="row"><input type="number" id="in-${z.id}-${j}" placeholder="e.g. 424242" value="${c.optional?'':'424242'}">`;
+    else if(c.seeds) inputs=`<label>Seeds (comma-separated)</label><div class="row"><input type="text" id="in-${z.id}-${j}" value="271828, 424242, 31415">`;
+    else inputs='<div class="row">';
+    card.innerHTML=`<h3>${c.h}</h3><p>${c.p}</p>${inputs}<button class="gen${c.alt?' alt':''}${c.ghost?' ghost':''}" id="btn-${z.id}-${j}">${c.btn}</button></div>
+      <div class="copybar" style="display:none" id="bar-${z.id}-${j}"><span>Paste into the Studio command bar:</span><span id="cp-${z.id}-${j}" style="cursor:pointer;color:var(--accent)">⧉ copy</span></div>
+      <pre style="display:none" id="out-${z.id}-${j}"></pre>`;
+    s.appendChild(card);
+    setTimeout(()=>{
+      document.getElementById(`btn-${z.id}-${j}`).onclick=()=>{
+        const inp=document.getElementById(`in-${z.id}-${j}`);
+        let cmd;
+        if(c.seeds) cmd=c.make(inp.value||'271828');
+        else if(c.seed) cmd=c.make(inp&&inp.value!==''?inp.value:(c.optional?'':'271828'));
+        else cmd=c.make();
+        const out=document.getElementById(`out-${z.id}-${j}`), bar=document.getElementById(`bar-${z.id}-${j}`);
+        out.textContent=cmd; out.style.display='block'; bar.style.display='flex';
+        navigator.clipboard&&navigator.clipboard.writeText(cmd);
+        const cp=document.getElementById(`cp-${z.id}-${j}`); cp.textContent='✓ copied to clipboard'; cp.classList.add('copied');
+        cp.onclick=()=>{navigator.clipboard.writeText(cmd); cp.textContent='✓ copied again';};
+      };
+    });
+  });
+  main.appendChild(s);
+});
+function activate(id){
+  zones.forEach(z=>{
+    document.getElementById('zone-'+z.id).classList.toggle('active', z.id===id);
+    document.getElementById('nav-'+z.id).classList.toggle('active', z.id===id);
+  });
+}
+activate('golden');
+</script>
+</body>
+</html>

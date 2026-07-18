@@ -97,34 +97,47 @@ function Runner.ValidateFullWorld()
 	params.FilterDescendantsInstances = {Workspace.Terrain}
 
 	local spawnHit = Workspace:Raycast(Vector3.new(0, 200, 0), Vector3.new(0, -400, 0), params)
-	local propsFolder = generated:FindFirstChild("DesertProps")
-	local propChecked, propGrounded = 0, 0
-	if propsFolder then
-		for _, model in propsFolder:GetChildren() do
-			if model:IsA("Model") and type(model:GetAttribute("SourceAsset")) == "string" then
-				propChecked += 1
-				-- Landmark-role variants stack on other rocks by design (the
-				-- SentinelCrown tower), so terrain distance is not their
-				-- support test; composition validation owns their placement.
-				if model:GetAttribute("CompositionRole") == "Landmark"
-					or grounded(model, 6, params) then
-					propGrounded += 1
+
+	local function groundingSweep()
+		local propsFolder = generated:FindFirstChild("DesertProps")
+		local pChecked, pGrounded = 0, 0
+		if propsFolder then
+			for _, model in propsFolder:GetChildren() do
+				if model:IsA("Model") and type(model:GetAttribute("SourceAsset")) == "string" then
+					pChecked += 1
+					-- Landmark-role variants stack on other rocks by design (the
+					-- SentinelCrown tower), so terrain distance is not their
+					-- support test; composition validation owns their placement.
+					if model:GetAttribute("CompositionRole") == "Landmark"
+						or grounded(model, 6, params) then
+						pGrounded += 1
+					end
 				end
 			end
 		end
+		local ruinsFolder = generated:FindFirstChild("Ruins")
+		local rChecked, rGrounded = 0, 0
+		if ruinsFolder then
+			for _, model in ruinsFolder:GetDescendants() do
+				if model:IsA("Model") and type(model:GetAttribute("PieceIndex")) == "number" then
+					rChecked += 1
+					if grounded(model, 3, params) then
+						rGrounded += 1
+					end
+				end
+			end
+		end
+		return pChecked, pGrounded, rChecked, rGrounded
 	end
 
-	local ruins = generated:FindFirstChild("Ruins")
-	local ruinChecked, ruinGrounded = 0, 0
-	if ruins then
-		for _, model in ruins:GetDescendants() do
-			if model:IsA("Model") and type(model:GetAttribute("PieceIndex")) == "number" then
-				ruinChecked += 1
-				if grounded(model, 3, params) then
-					ruinGrounded += 1
-				end
-			end
-		end
+	-- Terrain collision geometry rebuilds asynchronously after WriteVoxels, so
+	-- raycasts issued immediately after regeneration can flake on a handful of
+	-- borderline props. One settle-and-retry makes the sweep reliable without
+	-- loosening tolerances.
+	local propChecked, propGrounded, ruinChecked, ruinGrounded = groundingSweep()
+	if propGrounded < propChecked or ruinGrounded < ruinChecked then
+		task.wait(0.6)
+		propChecked, propGrounded, ruinChecked, ruinGrounded = groundingSweep()
 	end
 
 	local walls = root:FindFirstChild("BoundaryWalls")

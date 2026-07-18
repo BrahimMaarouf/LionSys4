@@ -42,6 +42,22 @@ Expected: `PASSED_M1_M2_M3_M4_M5_M6_CUMULATIVE`. Reports are stored under `Works
 
 If Rojo syncs sources while Studio is open, previously required ModuleScripts keep their old compiled code in the require cache and regressions may report false failures. After any sync, force fresh compilation (clone-replace the module instances, or restart Studio) before trusting regression output.
 
+
+## Control panel (seed playground)
+
+`ui/worldengine-panel.html` — open it in any browser. One zone per milestone
+group with seed inputs and buttons; each button copies a ready-to-paste Studio
+command-bar snippet driving `WorldEngineRunners.WorldEngineConsole`:
+
+- `Preview({seeds})` — plan-only metrics for any seeds (no instances created)
+- `BuildWorld(seed)` — the complete world (terrain → props → variation →
+  composition → surfacing → ruins → edge) for any seed, ~8 s
+- `RestoreGoldenWorld()` — rebuild + verify the golden baseline after experiments
+- Layer tools: regenerate/clear ruins and world edge, recipe contact sheet
+
+Building a non-golden seed is a sandbox operation; the cumulative regression
+restores and re-verifies the golden world afterwards.
+
 ## Principles
 
 - **Data plans the world; final geometry verifies it.** Planners never read live instances; validators and materializers may.
@@ -51,6 +67,5 @@ If Rojo syncs sources while Studio is open, previously required ModuleScripts ke
 
 ## Roadmap
 
-- Per-milestone settings UI (seed playground) built on the M9 seed browser.
 - Real-device performance profile — release QA (publish + MicroProfiler on a mid-range phone).
 - Later — forest biome, hydrology-driven biome placement, optional runtime per-server generation.
