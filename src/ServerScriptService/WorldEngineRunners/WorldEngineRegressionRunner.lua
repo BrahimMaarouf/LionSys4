@@ -7,6 +7,7 @@ local MilestoneOne = require(script.Parent.MilestoneOneRunner)
 local MilestoneTwo = require(script.Parent.MilestoneTwoRunner)
 local MilestoneThree = require(script.Parent.MilestoneThreeRunner)
 local MilestoneFour = require(script.Parent.MilestoneFourRunner)
+local MilestoneFive = require(script.Parent.MilestoneFiveRunner)
 
 local Runner = {}
 
@@ -15,14 +16,16 @@ function Runner.Run()
 	local milestoneTwo = MilestoneTwo.RunGoldenRegression()
 	local milestoneThree = MilestoneThree.RunGoldenRegression()
 	local milestoneFour = MilestoneFour.RunGoldenRegression()
-	local passed = milestoneOne.Passed and milestoneTwo.Passed and milestoneThree.Passed and milestoneFour.Passed
+	local milestoneFive = MilestoneFive.RunGoldenRegression()
+	local passed = milestoneOne.Passed and milestoneTwo.Passed and milestoneThree.Passed and milestoneFour.Passed and milestoneFive.Passed
 	local report = {
 		Passed = passed,
-		Status = if passed then "PASSED_M1_M2_M3_M4_CUMULATIVE" else "FAILED_OR_GATES_OPEN",
+		Status = if passed then "PASSED_M1_M2_M3_M4_M5_CUMULATIVE" else "FAILED_OR_GATES_OPEN",
 		MilestoneOne = milestoneOne,
 		MilestoneTwo = milestoneTwo,
 		MilestoneThree = milestoneThree,
 		MilestoneFour = milestoneFour,
+		MilestoneFive = milestoneFive,
 	}
 	local root = Workspace:WaitForChild("WorldRoot")
 	root:SetAttribute("CumulativeRegressionPassed", passed)
