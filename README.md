@@ -4,7 +4,7 @@ Rojo-compatible source mirror for the procedural world system in the active Robl
 
 ## Current status
 
-Milestones 1 and 2 are complete. The owned Blender-to-Roblox asset slice, deterministic placement, authored runtime LODs, and independent-session cumulative regression all pass. See `MILESTONE_2_RECAP.md`.
+Milestones 1, 2, and 3 are complete. The engine now covers deterministic terrain, an owned Blender-to-Roblox asset slice, authored runtime LODs, and deterministic desert composition with a validated trail and landmark. The independent-process cumulative regression passes. See `MILESTONE_3_RECAP.md`.
 
 ## Layout
 
@@ -16,4 +16,4 @@ Milestones 1 and 2 are complete. The owned Blender-to-Roblox asset slice, determ
 
 Rojo `7.7.0` is pinned through `rokit.toml`. Run `rojo serve` from this repository and connect the matching Studio plugin. Review the initial diff carefully because the active place also contains Studio-managed mesh templates and diagnostics.
 
-Milestone 1 and Milestone 2 cross-session golden regressions pass. Milestone 3 can now build composition and additional desert asset families on this foundation.
+Milestone 1, 2, and 3 cross-session golden regressions pass. Milestone 3 demonstrates composition from the small owned kit; production-scale content and further biome scope remain future work.
