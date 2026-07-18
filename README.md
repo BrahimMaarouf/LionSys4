@@ -36,7 +36,7 @@ Verification entry point (Studio command bar):
 require(game.ServerScriptService.WorldEngineRunners.WorldEngineRegressionRunner).Run()
 ```
 
-Expected: `PASSED_M1_M2_M3_M4_M5_M6_CUMULATIVE`. Reports are stored under `Workspace.WorldRoot.Diagnostics`.
+Expected: `PASSED_M1_M2_M3_M4_M5_M6_M8_M9_CUMULATIVE`. Reports are stored under `Workspace.WorldRoot.Diagnostics`.
 
 ### Known gotcha: module require-cache staleness
 
