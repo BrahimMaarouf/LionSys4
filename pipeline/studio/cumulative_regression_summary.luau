@@ -1,7 +1,7 @@
 local HttpService = game:GetService("HttpService")
 
 local report = require(game.ServerScriptService.WorldEngineRunners.WorldEngineRegressionRunner).Run()
-assert(report.Passed, "WorldEngine cumulative M1+M2+M3+M4+M5 regression failed")
+assert(report.Passed, "WorldEngine cumulative M1+M2+M3+M4+M5+M6 regression failed")
 local summary = {
 	Passed = report.Passed,
 	Status = report.Status,
@@ -24,6 +24,13 @@ local summary = {
 	M5Vistas = report.MilestoneFive.VistaCount,
 	M5Variants = report.MilestoneFive.VariantCount,
 	M5Components = report.MilestoneFive.ComponentCount,
+	M6 = report.MilestoneSix.Status,
+	M6Session = report.MilestoneSix.SessionId,
+	M6Plan = report.MilestoneSix.PlanSignature,
+	M6Surface = report.MilestoneSix.SurfaceSignature,
+	M6Details = report.MilestoneSix.DetailCount,
+	M6Emitters = report.MilestoneSix.AtmosphereEmitterCount,
+	M6Materialized = report.MilestoneSix.MaterializedSignature,
 }
 local encoded = HttpService:JSONEncode(summary)
 print("WORLDENGINE_SUMMARY=" .. encoded)
