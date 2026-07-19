@@ -58,6 +58,27 @@ command-bar snippet driving `WorldEngineRunners.WorldEngineConsole`:
 Building a non-golden seed is a sandbox operation; the cumulative regression
 restores and re-verifies the golden world afterwards.
 
+
+## WorldForge — build any world from your own assets
+
+The milestones above built the engine. **WorldForge** turns it into a tool:
+you supply meshes, textures and seeds; it arranges them, stage by stage, with
+every option under your control. It authors no content of its own and contains
+no theme — see `WORLDFORGE.md`.
+
+```lua
+require(game.ServerStorage.WorldForge.UI.Panel).Open()
+```
+
+Seven stages: Terrain → Library → Zones → Scatter → Structures → Surface & Light
+→ Save. Four independent seeds (terrain / zones / scatter / structures) let you
+lock a landscape you like and keep rolling only the planting. Worlds save as
+hashed recipes that reproduce exactly.
+
+WorldForge and the M1–M9 world share `Workspace.Terrain`, so only one is
+materialized at a time; `WF.ReleaseToWorldEngine()` hands control back before
+running the regression suite.
+
 ## Principles
 
 - **Data plans the world; final geometry verifies it.** Planners never read live instances; validators and materializers may.

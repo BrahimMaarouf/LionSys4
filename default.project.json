@@ -21,6 +21,10 @@
       "WorldEngine": {
         "$path": "src/ServerStorage/WorldEngine",
         "$ignoreUnknownInstances": true
+      },
+      "WorldForge": {
+        "$path": "src/ServerStorage/WorldForge",
+        "$ignoreUnknownInstances": true
       }
     },
     "ServerScriptService": {
