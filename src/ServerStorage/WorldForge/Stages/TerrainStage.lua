@@ -20,11 +20,9 @@
 local ServerStorage = game:GetService("ServerStorage")
 local Workspace = game:GetService("Workspace")
 
-local WorldEngine = ServerStorage:WaitForChild("WorldEngine")
-local Checksum = require(WorldEngine.Core.Checksum)
-local Noise = require(WorldEngine.Core.DeterministicNoise)
-
 local WorldForge = script.Parent.Parent
+local Checksum = require(WorldForge.Core.Checksum)
+local Noise = require(WorldForge.Core.Noise)
 local Recipe = require(WorldForge.Core.Recipe)
 
 local Stage = {}

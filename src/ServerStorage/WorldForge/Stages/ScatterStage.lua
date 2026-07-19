@@ -14,12 +14,10 @@ local CollectionService = game:GetService("CollectionService")
 local ServerStorage = game:GetService("ServerStorage")
 local Workspace = game:GetService("Workspace")
 
-local WorldEngine = ServerStorage:WaitForChild("WorldEngine")
-local Checksum = require(WorldEngine.Core.Checksum)
-local Hash32 = require(WorldEngine.Core.Hash32)
-local Noise = require(WorldEngine.Core.DeterministicNoise)
-
 local WorldForge = script.Parent.Parent
+local Checksum = require(WorldForge.Core.Checksum)
+local Hash32 = require(WorldForge.Core.Hash32)
+local Noise = require(WorldForge.Core.Noise)
 local Library = require(WorldForge.Core.AssetLibrary)
 local Recipe = require(WorldForge.Core.Recipe)
 local TerrainStage = require(WorldForge.Stages.TerrainStage)

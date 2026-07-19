@@ -145,6 +145,35 @@ only one can be materialized at a time. This is handled explicitly:
 
 Never let two `WorldRoot` folders exist at once; the release path enforces this.
 
+
+## Using WorldForge in a different (or brand-new) place
+
+WorldForge is self-contained — it needs nothing from the WorldEngine milestone
+folders. To use it in any other experience:
+
+**Option A — Rojo (recommended)**
+
+```
+rojo serve worldforge.project.json
+```
+
+Then open your new place, connect the Rojo plugin, Accept. Only
+`ServerStorage.WorldForge` is synced; no desert, no milestone code.
+
+**Option B — copy/paste**
+
+In the Engine place, right-click `ServerStorage.WorldForge` → Copy. In the new
+place, right-click `ServerStorage` → Paste.
+
+Then in the new place:
+
+```lua
+require(game.ServerStorage.WorldForge.UI.Panel).Open()
+```
+
+The Library starts empty — import your own asset IDs on tab 2. Everything else
+works immediately.
+
 ---
 
 ## Verified behaviour (2026-07-19)

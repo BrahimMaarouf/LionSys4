@@ -14,7 +14,7 @@ local ServerStorage = game:GetService("ServerStorage")
 
 local WorldForge = script.Parent.Parent
 local Schema = require(WorldForge.Core.Schema)
-local Checksum = require(ServerStorage.WorldEngine.Core.Checksum)
+local Checksum = require(WorldForge.Core.Checksum)
 
 local Recipe = {}
 

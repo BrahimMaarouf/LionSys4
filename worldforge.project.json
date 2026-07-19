@@ -1,0 +1,12 @@
+{
+  "name": "WorldForge",
+  "tree": {
+    "$className": "DataModel",
+    "ServerStorage": {
+      "WorldForge": {
+        "$path": "src/ServerStorage/WorldForge",
+        "$ignoreUnknownInstances": true
+      }
+    }
+  }
+}
