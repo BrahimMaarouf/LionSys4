@@ -55,8 +55,7 @@ local TERRAIN_MATERIALS = {
 
 local parameters: {Parameter} = {
 	-- ── Stage 1: Terrain ────────────────────────────────────────────────
-	i("terrain.size", "World Size", "Side length of the world in studs.", 512, 128, 2048, "Terrain", "terrain"),
-	i("terrain.resolution", "Voxel Size", "Terrain voxel resolution in studs. 4 is Roblox native.", 4, 4, 16, "Terrain", "terrain"),
+	i("terrain.size", "World Size", "Side length in studs. Snapped to the nearest 8.", 512, 128, 2048, "Terrain", "terrain"),
 	n("terrain.baseHeight", "Base Height", "Average ground level in studs.", 20, -100, 200, 1, "Terrain", "terrain"),
 	n("terrain.amplitude", "Amplitude", "Overall height variation. 0 = dead flat, 3 = extreme.", 1.0, 0, 3, 0.05, "Terrain", "terrain"),
 	n("terrain.featureScale", "Feature Scale", "Size of landforms. Low = many small hills, high = few large masses.", 1.0, 0.2, 4, 0.05, "Terrain", "terrain"),
@@ -116,6 +115,17 @@ local parameters: {Parameter} = {
 	n("lighting.cloudCover", "Cloud Cover", "How much sky the clouds fill.", 0.45, 0, 1, 0.01, "Surface", "lighting"),
 }
 
+-- Roblox terrain only supports 4-stud voxels, so this is a constant rather
+-- than a control. It stays in the table because recipes read it, but the panel
+-- skips Hidden parameters so no one can set it to a value that crashes
+-- WriteVoxels.
+table.insert(parameters, {
+	Id = "terrain.resolution", Label = "Voxel Size",
+	Help = "Fixed by Roblox at 4 studs.", Type = "integer",
+	Default = 4, Min = 4, Max = 4, Step = 1,
+	Stage = "Terrain", Rebuild = "terrain", Hidden = true,
+})
+
 local byId: {[string]: Parameter} = {}
 local byStage: {[string]: {Parameter}} = {}
 for _, parameter in parameters do
@@ -129,7 +139,7 @@ for _, parameter in parameters do
 end
 
 local Schema = {
-	Version = "1.0.0",
+	Version = "1.1.0",
 	Parameters = parameters,
 	ById = byId,
 	ByStage = byStage,

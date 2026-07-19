@@ -27,6 +27,10 @@ local Recipe = require(WorldForge.Core.Recipe)
 
 local Stage = {}
 
+-- Roblox supports exactly one terrain voxel resolution.
+local VOXEL_SIZE = 4
+Stage.VoxelSize = VOXEL_SIZE
+
 export type Field = {
 	Seed: number,
 	Size: number,
@@ -65,8 +69,16 @@ function Stage.BuildField(recipe: Recipe.Data): Field
 	local p = Recipe.Resolve(recipe)
 	local seed = Recipe.GetSeed(recipe, "terrain")
 
-	local size = p["terrain.size"]
-	local resolution = p["terrain.resolution"]
+	-- Roblox terrain voxels are a fixed 4-stud grid and WriteVoxels rejects any
+	-- other resolution. Every coordinate we hand to it must land exactly on
+	-- that grid, so the world size is snapped to a multiple of 2 voxels: that
+	-- keeps the centred origin (-size/2) on a voxel boundary for ANY size the
+	-- user types. Without this, an odd size shifts every tile off-grid and
+	-- Roblox silently expands the region, producing the classic
+	-- "17x17x17 array expected" mismatch.
+	local resolution = VOXEL_SIZE
+	local size = math.max(resolution * 2,
+		math.floor(p["terrain.size"] / (resolution * 2) + 0.5) * (resolution * 2))
 	local baseHeight = p["terrain.baseHeight"]
 	local amplitude = p["terrain.amplitude"]
 	local featureScale = p["terrain.featureScale"]
@@ -245,15 +257,18 @@ function Stage.Materialize(recipe: Recipe.Data)
 	local waterLevel = field.WaterLevel
 	local useWater = waterLevel > field.MinHeight
 	local skirtEnabled = p["terrain.edgeSkirt"]
-	local skirtWidth = if skirtEnabled then 128 else 0
+	local skirtWidth = if skirtEnabled then 128 else 0   -- 32 voxels
 
 	local floor = math.floor((field.MinHeight - 32) / resolution) * resolution
 
-	local tile = 64                                   -- studs per WriteVoxels tile
-	local cellsPerTile = math.floor(tile / resolution)
+	-- Tile and skirt are whole numbers of voxels, so every region corner below
+	-- is already grid-aligned and ExpandToGrid can never resize it.
+	local cellsPerTile = 16
+	local tile = cellsPerTile * resolution            -- 64 studs
 	local outerMin = -skirtWidth
 	local outerMax = size + skirtWidth
 	local tiles = 0
+	assert(origin % resolution == 0, "world origin is not voxel-aligned")
 
 	for gx = outerMin, outerMax - 1, tile do
 		for gz = outerMin, outerMax - 1, tile do

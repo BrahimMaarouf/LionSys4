@@ -19,6 +19,7 @@
 local CoreGui = game:GetService("CoreGui")
 local ServerStorage = game:GetService("ServerStorage")
 local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
 
 local WorldForgeFolder = script.Parent.Parent
 local Schema = require(WorldForgeFolder.Core.Schema)
@@ -376,7 +377,9 @@ end
 
 local function buildParameterSection(parent: Instance, stageName: string)
 	for _, parameter in Schema.ByStage[stageName] or {} do
-		if parameter.Type == "boolean" then
+		if parameter.Hidden then
+			continue                     -- engine constants are not controls
+		elseif parameter.Type == "boolean" then
 			booleanRow(parent, parameter)
 		elseif parameter.Type == "enum" then
 			enumRow(parent, parameter)
@@ -718,9 +721,18 @@ function Panel.Open()
 	gui.Parent = CoreGui
 	state.gui = gui
 
+	-- Default to a sensible fraction of the viewport rather than a fixed pixel
+	-- height: on small or scaled displays a hardcoded 620px window ended up
+	-- taller than the screen, which looked like "the panel is empty".
+	local viewport = Workspace.CurrentCamera and Workspace.CurrentCamera.ViewportSize
+		or Vector2.new(1280, 720)
+	local startWidth = math.clamp(360, 300, math.max(320, viewport.X - 40))
+	-- leave room below the window so the resize grip is always reachable
+	local startHeight = math.clamp(viewport.Y - 200, 320, 900)
+
 	local window = Instance.new("Frame")
 	window.BackgroundColor3 = COLORS.bg
-	window.Size = UDim2.new(0, 340, 0, 620)
+	window.Size = UDim2.fromOffset(startWidth, startHeight)
 	window.Position = UDim2.new(0, 20, 0, 90)
 	window.Active = true
 	window.Draggable = true
@@ -767,7 +779,7 @@ function Panel.Open()
 	-- body
 	local body = Instance.new("ScrollingFrame")
 	body.BackgroundTransparency = 1
-	body.Size = UDim2.new(1, -16, 1, -110)
+	body.Size = UDim2.new(1, -16, 1, -112)   -- scales with the window
 	body.Position = UDim2.new(0, 8, 0, 72)
 	body.ScrollBarThickness = 4
 	body.ScrollBarImageColor3 = COLORS.edge
@@ -793,6 +805,48 @@ function Panel.Open()
 	statusText.TextTruncate = Enum.TextTruncate.AtEnd
 	state.status = statusText
 
+	-- Resize grip. Without this the window was a fixed size with no way to
+	-- enlarge it, so any section taller than the default was unreachable.
+	local grip = Instance.new("TextButton")
+	grip.Name = "ResizeGrip"
+	grip.Text = "◢"
+	grip.TextSize = 16
+	grip.Font = Enum.Font.GothamBold
+	grip.TextColor3 = COLORS.dim
+	grip.BackgroundColor3 = COLORS.panel
+	grip.BackgroundTransparency = 0.25
+	grip.Size = UDim2.fromOffset(28, 28)        -- comfortable target
+	grip.Position = UDim2.new(1, -28, 1, -28)
+	grip.AutoButtonColor = true
+	grip.ZIndex = 5
+	grip.Parent = window
+	corner(grip, 6)
+
+	local resizing = false
+	local resizeStart, sizeStart
+	grip.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 then
+			resizing = true
+			resizeStart = input.Position
+			sizeStart = window.AbsoluteSize
+			window.Draggable = false          -- don't drag and resize at once
+		end
+	end)
+	UserInputService.InputChanged:Connect(function(input)
+		if resizing and input.UserInputType == Enum.UserInputType.MouseMovement then
+			local delta = input.Position - resizeStart
+			window.Size = UDim2.fromOffset(
+				math.clamp(sizeStart.X + delta.X, 300, 900),
+				math.clamp(sizeStart.Y + delta.Y, 260, 1400))
+		end
+	end)
+	UserInputService.InputEnded:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 and resizing then
+			resizing = false
+			window.Draggable = true
+		end
+	end)
+
 	local tabButtons = {}
 
 	local function render()
@@ -800,13 +854,35 @@ function Panel.Open()
 			if not child:IsA("UIListLayout") then child:Destroy() end
 		end
 		local builder = BUILDERS[state.section]
-		if builder then builder(body) end
+		if builder then
+			-- A section that throws used to leave the panel silently blank.
+			-- Now the failure is shown in place and reported in the status bar.
+			local ok, err = pcall(builder, body)
+			if not ok then
+				local box = Instance.new("Frame")
+				box.BackgroundColor3 = COLORS.row
+				box.Size = UDim2.new(1, 0, 0, 92)
+				box.Parent = body
+				corner(box)
+				padding(box, 8)
+				local title = label(box, "This section failed to draw", 12, COLORS.warn, true)
+				title.Size = UDim2.new(1, 0, 0, 16)
+				local detail = label(box, tostring(err), 10, COLORS.dim)
+				detail.Position = UDim2.new(0, 0, 0, 18)
+				detail.Size = UDim2.new(1, 0, 0, 60)
+				detail.TextWrapped = true
+				detail.TextYAlignment = Enum.TextYAlignment.Top
+				setStatus("error in " .. state.section .. ": " .. tostring(err), COLORS.warn)
+			end
+		end
 		for id, tabButton in tabButtons do
 			local selected = id == state.section
 			tabButton.BackgroundColor3 = if selected then COLORS.accent else COLORS.panel
 			tabButton.TextColor3 = if selected then Color3.fromRGB(20, 14, 8) else COLORS.dim
 		end
-		setStatus(statusLine())
+		if state.status and state.status.TextColor3 ~= COLORS.warn then
+			setStatus(statusLine())
+		end
 	end
 	state.refresh = render
 

@@ -214,6 +214,18 @@ Layer names for `Build`: `terrain`, `surface`, `scatter`, `structures`,
 
 ---
 
+## Fixed in 1.1 (2026-07-19)
+
+- **`WriteVoxels` "17x17x17 array expected" crash.** World Size is now snapped
+  to a multiple of 8 so the centred origin always lands on Roblox's 4-stud
+  voxel grid. Any size you type works; 700 becomes 704.
+- **Voxel Size control removed.** Roblox only accepts 4-stud voxels, so the
+  slider could only ever cause failures. It is now a hidden constant.
+- **Blank sections.** A section that errors while drawing used to leave the
+  panel silently empty. Errors are now shown in place and in the status bar.
+- **Fixed window size.** The panel sizes itself to your viewport and has a
+  resize grip in the bottom-right corner.
+
 ## Known limits
 
 - The panel lives in `CoreGui` and is opened with one command per Studio
